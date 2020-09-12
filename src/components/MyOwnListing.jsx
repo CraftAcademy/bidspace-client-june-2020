@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Item, Label, Button, Card } from "semantic-ui-react";
+import { Item, Label, Button, Card, Header } from "semantic-ui-react";
 import SendMessage from "./SendMessage"
 import { ActionCableProvider } from "actioncable-client-react";
-
+import ListMessages from './ListMessages'
 const MyOwnListing = (props) => {
   const listingId = props.match.params.id;
   const [mySingleListing, setMySingleListing] = useState({});
@@ -22,30 +22,29 @@ const MyOwnListing = (props) => {
     let response = await axios.get(`account/listings/${listingId}`, {
       headers: headers,
     });
-
     setMySingleListing(response.data.listing);
     setImages(response.data.listing.images);
     setBiddings(response.data.listing.biddings);
   };
 
   const handleBidding = async (event) => {
-    let  responseMessage, response;
+    let responseMessage, response;
     let stat = event.target.dataset.cy;
     var pattern = /[a-z]/g;
     let status = stat.match(pattern).join("");
 
     const headers = JSON.parse(localStorage.getItem("J-tockAuth-Storage"));
     const bidId = event.target.id;
-    
 
-    
+
+
     try {
       let response = await axios.put(
         `biddings/${bidId}`,
-         { status: status },
+        { status: status },
         { headers: headers }
       );
-      
+
       responseMessage = response.data.message;
       if (status === "accepted") {
         getMySingleListing();
@@ -53,7 +52,7 @@ const MyOwnListing = (props) => {
     } catch (error) {
       debugger
       responseMessage = error.response.data.errors;
-    }finally {
+    } finally {
       setMessage(responseMessage);
     }
   };
@@ -63,7 +62,7 @@ const MyOwnListing = (props) => {
     let responseReopenMessage, response;
 
     try {
-      let response = await axios.put(`account/listings/${listingId}`,{}, {
+      let response = await axios.put(`account/listings/${listingId}`, {}, {
         headers: headers,
       });
       responseReopenMessage = response.data.message;
@@ -101,64 +100,70 @@ const MyOwnListing = (props) => {
                   Reopen Listing
                 </button>
               ) : (
-                <div>
-                  {biddings.map((bid) => (
-                    <>
-                      <div></div>
-                      <Card.Group>
-                        <Card>
-                          <div data-cy={`bid-${bid.id}`}>
-                            <h4>
-                              Incoming offer from: <em>{bid.user.email}</em>
-                            </h4>
-                            <h3>Amount: {bid.bid} SEK</h3>
-                            <SendMessage 
+                  <div>
+                    {biddings.map((bid) => (
+                      <>
+                        <div></div>
+                        <Card.Group>
+                          <Card>
+                            <div data-cy={`bid-${bid.id}`}>
+                              <h4>
+                                Incoming offer from: <em>{bid.user.email}</em>
+                              </h4>
+                              <h3>Amount: {bid.bid} SEK</h3>
+
+                            </div>
+                            <Card.Content extra>
+                              <div className="ui two buttons">
+                                {bid.status === "pending" ? (
+                                  <>
+                                    <Button
+                                      id={bid.id}
+                                      onClick={handleBidding}
+                                      data-cy={`accepted-${bid.id}`}
+                                      basic
+                                      color="green"
+                                    >
+                                      Approve
+                                  </Button>
+                                    <Button
+                                      id={bid.id}
+                                      onClick={handleBidding}
+                                      data-cy={`rejected-${bid.id}`}
+                                      basic
+                                      color="red"
+                                    >
+                                      Decline
+                                  </Button>
+                                  </>
+                                ) : (
+                                    <h1
+                                      style={{
+                                        color:
+                                          bid.status === "accepted"
+                                            ? "green"
+                                            : "red",
+                                      }}
+                                    >
+                                      This bid is {bid.status}
+                                    </h1>
+                                  )}
+                              </div>
+                            </Card.Content>
+                            <Header as="h3">Messages</Header>
+                            {bid.messages != [] &&
+                              <ListMessages listing={mySingleListing} bid={bid} />
+                            }
+                            <SendMessage
+                              getMySingleListing={getMySingleListing}
                               bid={bid}
                             />
-                          </div>
-                          <Card.Content extra>
-                            <div className="ui two buttons">
-                              {bid.status === "pending" ? (
-                                <>
-                                  <Button
-                                    id={bid.id}
-                                    onClick={handleBidding}
-                                    data-cy={`accepted-${bid.id}`}
-                                    basic
-                                    color="green"
-                                  >
-                                    Approve
-                                  </Button>
-                                  <Button
-                                    id={bid.id}
-                                    onClick={handleBidding}
-                                    data-cy={`rejected-${bid.id}`}
-                                    basic
-                                    color="red"
-                                  >
-                                    Decline
-                                  </Button>
-                                </>
-                              ) : (
-                                <h1
-                                  style={{
-                                    color:
-                                      bid.status === "accepted"
-                                        ? "green"
-                                        : "red",
-                                  }}
-                                >
-                                  This bid is {bid.status}
-                                </h1>
-                              )}
-                            </div>
-                          </Card.Content>
-                        </Card>
-                      </Card.Group>
-                    </>
-                  ))}
-                </div>
-              )}
+                          </Card>
+                        </Card.Group>
+                      </>
+                    ))}
+                  </div>
+                )}
             </Item.Extra>
           </Item.Content>
         </Item>

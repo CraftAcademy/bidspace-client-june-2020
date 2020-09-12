@@ -8,6 +8,7 @@ const SendMessage = (props) => {
 
   const submitMessage = async (event) => {
     event.preventDefault()
+    const inputField = event.target.children.message
     const headers = JSON.parse(localStorage.getItem("J-tockAuth-Storage"));
     let message
     try {
@@ -18,6 +19,8 @@ const SendMessage = (props) => {
       });
 
       message = response.data.message
+      props.getMySingleListing()
+      inputField.value = ''
     } catch (error) {
       message = error.response.data.message
     } finally {
