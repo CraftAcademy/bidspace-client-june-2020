@@ -12,7 +12,7 @@ const SendMessage = (props) => {
       let response = await axios.post(`biddings/${props.bid.id}/messages`, {
         message: { body: event.target.children.message.value }
       }, {
-        headers: headers,
+        headers: headers
       });
 
       message = response.data.message

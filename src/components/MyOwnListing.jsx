@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Item, Label, Button, Card } from "semantic-ui-react";
 import SendMessage from "./SendMessage"
+import { ActionCableProvider } from "actioncable-client-react";
 
 const MyOwnListing = (props) => {
   const listingId = props.match.params.id;
@@ -10,6 +11,7 @@ const MyOwnListing = (props) => {
   const [biddings, setBiddings] = useState([]);
   const [message, setMessage] = useState("");
   const [reopenMessage, setReopenMessage] = useState("");
+  const uid = JSON.parse(localStorage.getItem("J-tockAuth-Storage")).uid
 
   useEffect(() => {
     getMySingleListing();
@@ -166,6 +168,7 @@ const MyOwnListing = (props) => {
 
   return (
     <div>
+      {/* <ActionCableProvider url={`ws://localhost:3000/cable?uid=${uid}`}></ActionCableProvider> */}
       <h1>{myListingContent}</h1>
       <h3 data-cy="message">{message}</h3>
       <h3 data-cy="reopen-message">{reopenMessage}</h3>
