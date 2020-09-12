@@ -47,3 +47,8 @@ code {
   padding-bottom: 2%;
   padding-top:2%;
 }
+
+#google-maps {
+  height: 50vh;
+  width: 50vw;
+}
