@@ -7,6 +7,7 @@ const MyAccount = () => {
   const [myListing, setMyListing] = useState([]);
   const [myBiddings, setMyBiddings] = useState([])
 
+
   useEffect(() => {
     getListing();
     getBids()
@@ -20,14 +21,15 @@ const MyAccount = () => {
 
 
   const getBids = async () => {
-    
     const headers = JSON.parse(localStorage.getItem("J-tockAuth-Storage"));
     let response = await axios.get("/account/biddings", { headers: headers });
     setMyBiddings(response.data.biddings)
   }
 
+
+
   let bids
-    
+
   if (myBiddings.length > 0) {
     bids = myBiddings.map(mybid => (
       <div data-cy='user-bids' >

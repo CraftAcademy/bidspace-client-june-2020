@@ -26,7 +26,7 @@ const MyOwnListing = (props) => {
   };
 
   const handleBidding = async (event) => {
-    let  responseMessage, response;
+    let responseMessage
     let stat = event.target.dataset.cy;
     var pattern = /[a-z]/g;
     let status = stat.match(pattern).join("");
@@ -48,7 +48,6 @@ const MyOwnListing = (props) => {
         getMySingleListing();
       }
     } catch (error) {
-      debugger
       responseMessage = error.response.data.errors;
     }finally {
       setMessage(responseMessage);
@@ -56,6 +55,7 @@ const MyOwnListing = (props) => {
   };
 
   const reOpenListing = async () => {
+   
     const headers = JSON.parse(localStorage.getItem("J-tockAuth-Storage"));
     let responseReopenMessage, response;
 
@@ -66,6 +66,7 @@ const MyOwnListing = (props) => {
       responseReopenMessage = response.data.message;
       getMySingleListing();
     } catch (error) {
+      
       responseReopenMessage = response.data.error;
     } finally {
       setReopenMessage(responseReopenMessage);
@@ -80,7 +81,7 @@ const MyOwnListing = (props) => {
           data-id={mySingleListing.id}
         >
           {images.map((url) => (
-            <Item.Image data-cy="image" src={url} alt="listing image" />
+            <Item.Image data-cy="image" src={url.url} alt="listing image" />
           ))}
           <Item.Content>
             <Item.Header data-cy="lead">{mySingleListing.lead}</Item.Header>
