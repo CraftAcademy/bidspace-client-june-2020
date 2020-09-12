@@ -14,6 +14,7 @@ const MyAccount = () => {
   const [myListing, setMyListing] = useState([]);
   const [myBiddings, setMyBiddings] = useState([]);
 
+
   useEffect(() => {
     getListing();
     getBids();
