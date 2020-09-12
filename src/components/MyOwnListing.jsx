@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Item, Label, Button, Card } from "semantic-ui-react";
+import SendMessage from "./SendMessage"
 
 const MyOwnListing = (props) => {
   const listingId = props.match.params.id;
@@ -109,6 +110,9 @@ const MyOwnListing = (props) => {
                               Incoming offer from: <em>{bid.user.email}</em>
                             </h4>
                             <h3>Amount: {bid.bid} SEK</h3>
+                            <SendMessage 
+                              bid={bid}
+                            />
                           </div>
                           <Card.Content extra>
                             <div className="ui two buttons">
