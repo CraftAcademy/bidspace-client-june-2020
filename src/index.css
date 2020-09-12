@@ -48,6 +48,10 @@ code {
   padding-top:2%;
 }
 
+#myaccount {
+  text-decoration: underline;
+}
+
 #google-maps {
   height: 50vh;
   width: 50vw;
