@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Form, TextArea, Button } from 'semantic-ui-react'
+
 import axios from "axios";
 
 const SendMessage = (props) => {
@@ -24,10 +26,21 @@ const SendMessage = (props) => {
   }
 
   return (
-    <form onSubmit={submitMessage}>
-      <input id="message" placeholder="Send bidder a message"/>
-      <button>Send</button>
-    </form>
+    <Form onSubmit={submitMessage}>
+      <TextArea
+        size="mini"
+        id="message"
+        placeholder="Send a message to the bidder..." />
+      {/* <button>Send</button> */}
+      <Button
+        data-cy={`submit`}
+        basic
+        fluid
+        color="blue"
+      >
+        Send
+      </Button>
+    </Form>
   )
 }
 
