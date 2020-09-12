@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Item, Label, Button, Icon } from "semantic-ui-react";
+import { Item, Label, Button, Icon, Container, Header, Divider } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
 const MyAccount = () => {
@@ -18,7 +18,6 @@ const MyAccount = () => {
     setMyListing(response.data.listings);
   };
 
-
   const getBids = async () => {
     
     const headers = JSON.parse(localStorage.getItem("J-tockAuth-Storage"));
@@ -30,16 +29,24 @@ const MyAccount = () => {
     
   if (myBiddings.length > 0) {
     bids = myBiddings.map(mybid => (
-      <div data-cy='user-bids' >
-        <div data-cy={`bid-${mybid.listing.id}`}>
-          <img data-cy='listing-image' src={mybid.listing.image} alt="parking" />
-          <h1 data-cy="listing-lead" >{mybid.listing.lead}</h1>
-          <h1 data-cy="listing-scene" >{mybid.listing.scene}</h1>
-          <h1 data-cy="listing-category" >{mybid.listing.category}</h1>
-          <h1 data-cy="bid-status" >{mybid.status}</h1>
-          <h1 data-cy="bid-offer" >{mybid.bid}</h1>
-        </div>
-      </div>
+      <Item.Group divided>
+      <Item.Group data-cy='user-bids' >
+        <Item data-cy={`bid-${mybid.listing.id}`}>
+          <Item.Image data-cy='listing-image' src={mybid.listing.image} alt="parking" />
+          <Item.Content>
+          <Item.Header data-cy="listing-lead" >{mybid.listing.lead}</Item.Header>
+          <Item.Meta data-cy="listing-category" >{mybid.listing.category}</Item.Meta>
+          <Label data-cy="listing-scene" >{mybid.listing.scene}</Label><br /><br />
+          <Item.Content >
+          <Item.Extra>
+          <Item.Header floated="right" data-cy="bid-status" ><h3>Bid status:</h3>{mybid.status}</Item.Header>
+          <Item.Header data-cy="bid-offer" ><h3>Bid amount:</h3>{mybid.bid}</Item.Header>
+          </Item.Extra>
+          </Item.Content>
+          </Item.Content>
+        </Item>
+      </Item.Group>
+      </Item.Group>
     ))
   } else {
     bids = (
@@ -48,8 +55,6 @@ const MyAccount = () => {
       </>
     ) 
   } 
-    
-  
 
   let content = myListing.map((listing) => (
     <Item.Group divided>
@@ -74,7 +79,17 @@ const MyAccount = () => {
 
   return (
     <div>
+      <Header as="h1" textAlign="center" icon>
+        <Icon name="pin" />
+        My Account
+      </Header>
+      <Divider section />
+      <Container text>
+      <Header as='h2'id="myaccount">My Bids</Header>
       <div>{bids}</div>
+      </Container>
+      <Divider section />
+      <Header as='h2'id="myaccount">My Listings</Header>
       <div>{content}</div>
     </div>
   );
