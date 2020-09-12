@@ -13,7 +13,7 @@ const GoogleMaps = ({ listings, ...props }) => {
     setInfoWindow(true);
   };
   return (
-    <div>
+    <div id="google-maps">
       <Map
         initialCenter={{
           lat: 59.26752,
