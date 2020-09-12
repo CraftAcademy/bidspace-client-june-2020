@@ -5,7 +5,7 @@ import auth from "../modules/auth";
 import { Link } from "react-router-dom";
 
 const SingUpForm = (props) => {
-  let isUserAuthenticated = props.authenticated; 
+  let isUserAuthenticated = props.authenticated;
   let signUp;
 
   const registration = async (event) => {
@@ -17,13 +17,25 @@ const SingUpForm = (props) => {
         password: event.target.password.value,
         passwordconfirmation: event.target.passwordconfirmation.value,
       });
+      let currentUser
+
+      if (response.data.data) {
+        currentUser = {
+          id: response.data.data.id,
+          email: response.data.data.email,
+          role: response.data.data.role
+        }
+      } else {
+        currentUser = {
+          id: response.data.id,
+          email: response.data.email,
+          role: response.data.role
+        }
+      }
       props.dispatch({
         type: "AUTHENTICATE",
         payload: {
-          currentUser: {
-            email: response.data.data.email,
-            role: response.data.data.role,
-          },
+          currentUser: currentUser
         },
       });
     } catch (error) {
@@ -39,19 +51,19 @@ const SingUpForm = (props) => {
   if (isUserAuthenticated) {
     signUp = (
       <>
-          <Step.Group>
-            <Step completed>
-              <Icon name='info' />
-              <Step.Content>
-                <Step.Title data-cy="message">You are successfully signed up!</Step.Title>
-                <Step.Description>
-                  <Link data-cy="link" to={{ pathname: "/" }}>
-                    Take me back to Home Page
+        <Step.Group>
+          <Step completed>
+            <Icon name='info' />
+            <Step.Content>
+              <Step.Title data-cy="message">You are successfully signed up!</Step.Title>
+              <Step.Description>
+                <Link data-cy="link" to={{ pathname: "/" }}>
+                  Take me back to Home Page
                   </Link>
-                </Step.Description>
-              </Step.Content>
-            </Step>
-          </Step.Group>
+              </Step.Description>
+            </Step.Content>
+          </Step>
+        </Step.Group>
       </>
     );
   } else {
@@ -103,8 +115,8 @@ const SingUpForm = (props) => {
     );
   }
 
-  return( 
-    <>{ signUp }</>
+  return (
+    <>{signUp}</>
   )
 };
 const mapStateToProps = (state) => {

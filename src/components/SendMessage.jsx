@@ -19,7 +19,12 @@ const SendMessage = (props) => {
       });
 
       message = response.data.message
-      props.getMySingleListing()
+      if (props.userBids) {
+        props.getBids()
+      } else {
+        props.getMySingleListing()
+      }
+
       inputField.value = ''
     } catch (error) {
       message = error.response.data.message

@@ -11,7 +11,6 @@ const MyOwnListing = (props) => {
   const [biddings, setBiddings] = useState([]);
   const [message, setMessage] = useState("");
   const [reopenMessage, setReopenMessage] = useState("");
-  const uid = JSON.parse(localStorage.getItem("J-tockAuth-Storage")).uid
 
   useEffect(() => {
     getMySingleListing();
@@ -50,7 +49,6 @@ const MyOwnListing = (props) => {
         getMySingleListing();
       }
     } catch (error) {
-      debugger
       responseMessage = error.response.data.errors;
     } finally {
       setMessage(responseMessage);

@@ -11,10 +11,25 @@ const LoginForm = (props) => {
         event.target.email.value,
         event.target.password.value
       );
+      let currentUser
+
+      if (response.data.data) {
+        currentUser = {
+          id: response.data.data.id,
+          email: response.data.data.email,
+          role: response.data.data.role
+        }
+      } else {
+        currentUser = {
+          id: response.data.id,
+          email: response.data.email,
+          role: response.data.role
+        }
+      }
       props.dispatch({
         type: "AUTHENTICATE",
         payload: {
-          currentUser: { email: response.data.email, role: response.data.role },
+          currentUser: currentUser
         },
       });
     } catch (error) {

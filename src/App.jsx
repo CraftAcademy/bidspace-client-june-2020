@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import LandingPage from "./components/LandingPage";
 import ListingPage from "./components/ListingPage";
 import LandlordPage from "./components/LandlordPage";
@@ -13,9 +13,47 @@ import MyAccount from "./components/MyAccount";
 import MyOwnListing from "./components/MyOwnListing";
 import Faq from "./components/Faq"
 import ContactUs from "./components/ContactUs"
+import auth from "./modules/auth";
 
 
 const App = (props) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const persistLogin = async () => {
+      if (localStorage.hasOwnProperty("J-tockAuth-Storage")) {
+        const tokenParams = JSON.parse(localStorage.getItem("J-tockAuth-Storage"));
+        try {
+          const response = await auth.validateToken(tokenParams);
+          let currentUser
+
+          if (response.data.data) {
+            currentUser = {
+              id: response.data.data.id,
+              email: response.data.data.email,
+              role: response.data.data.role
+            } 
+          } else {
+            currentUser = {
+              id: response.data.id,
+              email: response.data.email,
+              role: response.data.role
+            }
+          }
+          dispatch({
+            type: "AUTHENTICATE",
+            payload: {
+              currentUser: currentUser
+            },
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+
+    persistLogin()
+  }, [])
   return (
     <>
       <Navbar />

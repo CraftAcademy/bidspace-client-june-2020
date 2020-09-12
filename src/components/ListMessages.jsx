@@ -4,12 +4,11 @@ import { useSelector } from 'react-redux'
 
 const ListMessages = (props) => {
   const { bid } = props
-  // const currentUser = useSelector(state => state.currentUser)
+  const currentUser = useSelector(state => state.currentUser)
 
-  const currentUser = props.listing.landlord
   const styleOptions = (message) => {
-    let alignment = currentUser.id === message.sender_id ? 'right' : 'left'
-    let sender = currentUser.id === message.sender_id ? currentUser.email : sender.id
+    let alignment = currentUser.id === message.sender.id ? 'right' : 'left'
+    let sender = currentUser.id === message.sender.id ? currentUser.email : message.sender.email
     return (
     {
       alignment: alignment,

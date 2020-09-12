@@ -1,5 +1,5 @@
 const initialState = {
-  currentUser: { email: undefined, role: undefined },
+  currentUser: { id: undefined, email: undefined, role: undefined },
   authenticated: false,
   renderLoginForm: false,
   renderSignUpForm: false,

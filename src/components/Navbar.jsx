@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, Segment } from "semantic-ui-react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -9,7 +9,7 @@ const Navbar = (props) => {
   let isLoginVisible = props.renderLoginForm;
   let isUserAuthenticated = props.authenticated;
   let isCurrentUserSubscriber = props.userRole === "subscriber" ? true : false;
-
+  
   const [activeItem, setActiveItem] = useState("home");
   const handleItemClick = (e, { name }) => {
     setActiveItem(name);

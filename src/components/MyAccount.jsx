@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Item, Label, Button, Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
+import SendMessage from "./SendMessage"
+import { ActionCableProvider } from "actioncable-client-react";
+import ListMessages from './ListMessages'
+
 
 const MyAccount = () => {
   const [myListing, setMyListing] = useState([]);
@@ -20,14 +24,13 @@ const MyAccount = () => {
 
 
   const getBids = async () => {
-    
     const headers = JSON.parse(localStorage.getItem("J-tockAuth-Storage"));
     let response = await axios.get("/account/biddings", { headers: headers });
     setMyBiddings(response.data.biddings)
   }
 
   let bids
-    
+
   if (myBiddings.length > 0) {
     bids = myBiddings.map(mybid => (
       <div data-cy='user-bids' >
@@ -38,6 +41,14 @@ const MyAccount = () => {
           <h1 data-cy="listing-category" >{mybid.listing.category}</h1>
           <h1 data-cy="bid-status" >{mybid.status}</h1>
           <h1 data-cy="bid-offer" >{mybid.bid}</h1>
+          <SendMessage
+            bid={mybid}
+            userBids={true} 
+            getBids={getBids}
+          />
+          {mybid.messages != [] &&
+            <ListMessages bid={mybid} />
+          }
         </div>
       </div>
     ))
@@ -46,10 +57,10 @@ const MyAccount = () => {
       <>
         <h1 data-cy='message'>You have not placed any bids.</h1>
       </>
-    ) 
-  } 
-    
-  
+    )
+  }
+
+
 
   let content = myListing.map((listing) => (
     <Item.Group divided>
@@ -74,7 +85,9 @@ const MyAccount = () => {
 
   return (
     <div>
+      <h1>Your current bids</h1>
       <div>{bids}</div>
+      <h1>Your listings</h1>
       <div>{content}</div>
     </div>
   );
