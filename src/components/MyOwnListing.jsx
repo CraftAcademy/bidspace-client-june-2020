@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Item, Label, Button, Card, Header } from "semantic-ui-react";
 import SendMessage from "./SendMessage"
-import { ActionCableProvider } from "actioncable-client-react";
+import { ActionCableProvider, ActionCable } from "actioncable-client-react";
 import ListMessages from './ListMessages'
 const MyOwnListing = (props) => {
   const listingId = props.match.params.id;
@@ -72,110 +72,116 @@ const MyOwnListing = (props) => {
     }
   };
 
+  const handleRecieved = (data) => {
+    debugger
+  }
+
   let myListingContent = (
-    <>
-      <Item.Group divided>
-        <Item
-          data-cy={`listing-${mySingleListing.id}`}
-          data-id={mySingleListing.id}
-        >
-          {images.map((url) => (
-            <Item.Image data-cy="image" src={url} alt="listing image" />
-          ))}
-          <Item.Content>
-            <Item.Header data-cy="lead">{mySingleListing.lead}</Item.Header>
-            <Item.Meta data-cy="address">{mySingleListing.address}</Item.Meta>
-            <Item.Description data-cy="description">
-              {mySingleListing.description}
-            </Item.Description>
-            <Item.Extra>
-              <Label data-cy="scene">{mySingleListing.scene}</Label>
-              <Label data-cy="category">{mySingleListing.category}</Label>
-              <Label data-cy="price">{mySingleListing.price}</Label>
+    <Item.Group divided>
+      <Item
+        data-cy={`listing-${mySingleListing.id}`}
+        data-id={mySingleListing.id}
+      >
+        {images.map((image) => {
+          return (
+            <Item.Image data-cy="image" src={image.url} alt="listing image" />
+          )
+        })}
+        <Item.Content>
+          <Item.Header data-cy="lead">{mySingleListing.lead}</Item.Header>
+          <Item.Meta data-cy="address">{mySingleListing.address}</Item.Meta>
+          <Item.Description data-cy="description">
+            {mySingleListing.description}
+          </Item.Description>
+          <Item.Extra>
+            <Label data-cy="scene">{mySingleListing.scene}</Label>
+            <Label data-cy="category">{mySingleListing.category}</Label>
+            <Label data-cy="price">{mySingleListing.price}</Label>
 
-              {mySingleListing.tenant ? (
-                <button data-cy="reopen-button" onClick={reOpenListing}>
-                  Reopen Listing
-                </button>
-              ) : (
-                  <div>
-                    {biddings.map((bid) => (
-                      <>
-                        <div></div>
-                        <Card.Group>
-                          <Card>
-                            <div data-cy={`bid-${bid.id}`}>
-                              <h4>
-                                Incoming offer from: <em>{bid.user.email}</em>
-                              </h4>
-                              <h3>Amount: {bid.bid} SEK</h3>
+            {mySingleListing.tenant ? (
+              <button data-cy="reopen-button" onClick={reOpenListing}>
+                Reopen Listing
+              </button>
+            ) : (
+                <>
+                  {biddings.map((bid) => (
+                    <Card.Group>
+                      <ActionCable
+                        channel={'BiddingsChannel'}
+                        room={{ bidding_id: bid.id }}
+                        onReceived={() => handleRecieved()}
+                      />
+                      <Card style={{ width: "50vw", padding: '3%' }}>
+                        <div data-cy={`bid-${bid.id}`}>
+                          <h4>
+                            Incoming offer from: <em>{bid.user.email}</em>
+                          </h4>
+                          <h3>Amount: {bid.bid} SEK</h3>
 
-                            </div>
-                            <Card.Content extra>
-                              <div className="ui two buttons">
-                                {bid.status === "pending" ? (
-                                  <>
-                                    <Button
-                                      id={bid.id}
-                                      onClick={handleBidding}
-                                      data-cy={`accepted-${bid.id}`}
-                                      basic
-                                      color="green"
-                                    >
-                                      Approve
+                        </div>
+                        <Card.Content extra >
+                          <div className="ui two buttons">
+                            {bid.status === "pending" ? (
+                              <>
+                                <Button
+                                  id={bid.id}
+                                  onClick={handleBidding}
+                                  data-cy={`accepted-${bid.id}`}
+                                  basic
+                                  color="green"
+                                >
+                                  Approve
                                   </Button>
-                                    <Button
-                                      id={bid.id}
-                                      onClick={handleBidding}
-                                      data-cy={`rejected-${bid.id}`}
-                                      basic
-                                      color="red"
-                                    >
-                                      Decline
+                                <Button
+                                  id={bid.id}
+                                  onClick={handleBidding}
+                                  data-cy={`rejected-${bid.id}`}
+                                  basic
+                                  color="red"
+                                >
+                                  Decline
                                   </Button>
-                                  </>
-                                ) : (
-                                    <h1
-                                      style={{
-                                        color:
-                                          bid.status === "accepted"
-                                            ? "green"
-                                            : "red",
-                                      }}
-                                    >
-                                      This bid is {bid.status}
-                                    </h1>
-                                  )}
-                              </div>
-                            </Card.Content>
-                            <Header as="h3">Messages</Header>
-                            {bid.messages != [] &&
-                              <ListMessages listing={mySingleListing} bid={bid} />
-                            }
-                            <SendMessage
-                              getMySingleListing={getMySingleListing}
-                              bid={bid}
-                            />
-                          </Card>
-                        </Card.Group>
-                      </>
-                    ))}
-                  </div>
-                )}
-            </Item.Extra>
-          </Item.Content>
-        </Item>
-      </Item.Group>
-    </>
+                              </>
+                            ) : (
+                                <h1
+                                  style={{
+                                    color:
+                                      bid.status === "accepted"
+                                        ? "green"
+                                        : "red",
+                                  }}
+                                >
+                                  This bid is {bid.status}
+                                </h1>
+                              )}
+                          </div>
+                          <Header as="h3">Messages</Header>
+                          {bid.messages != [] &&
+                            <ListMessages listing={mySingleListing} bid={bid} />
+                          }
+                          <SendMessage
+                            getMySingleListing={getMySingleListing}
+                            bid={bid}
+                          />
+                        </Card.Content>
+                      </Card>
+                    </Card.Group>
+                  ))}
+                </>
+              )}
+          </Item.Extra>
+        </Item.Content>
+      </Item>
+    </Item.Group>
   );
 
   return (
-    <div>
-      {/* <ActionCableProvider url={`ws://localhost:3000/cable?uid=${uid}`}></ActionCableProvider> */}
-      <h1>{myListingContent}</h1>
-      <h3 data-cy="message">{message}</h3>
-      <h3 data-cy="reopen-message">{reopenMessage}</h3>
-    </div>
+    <>
+        {myListingContent}
+        <h3 data-cy="message">{message}</h3>
+        <h3 data-cy="reopen-message">{reopenMessage}</h3>
+
+    </>
   );
 };
 

@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Item, Label, Button, Icon } from "semantic-ui-react";
+import { Container, Item, Label, Button, Icon, Header, Card } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import SendMessage from "./SendMessage"
 import { ActionCableProvider } from "actioncable-client-react";
 import ListMessages from './ListMessages'
+import { useSelector } from 'react-redux';
+
 
 
 const MyAccount = () => {
   const [myListing, setMyListing] = useState([]);
   const [myBiddings, setMyBiddings] = useState([])
+  const currentUser = useSelector(state => state.currentUser)
 
   useEffect(() => {
     getListing();
@@ -32,25 +35,35 @@ const MyAccount = () => {
   let bids
 
   if (myBiddings.length > 0) {
-    bids = myBiddings.map(mybid => (
+    bids = myBiddings.map(bid => (
       <div data-cy='user-bids' >
-        <div data-cy={`bid-${mybid.listing.id}`}>
-          <img data-cy='listing-image' src={mybid.listing.image} alt="parking" />
-          <h1 data-cy="listing-lead" >{mybid.listing.lead}</h1>
-          <h1 data-cy="listing-scene" >{mybid.listing.scene}</h1>
-          <h1 data-cy="listing-category" >{mybid.listing.category}</h1>
-          <h1 data-cy="bid-status" >{mybid.status}</h1>
-          <h1 data-cy="bid-offer" >{mybid.bid}</h1>
-          <SendMessage
-            bid={mybid}
-            userBids={true} 
-            getBids={getBids}
-          />
-          {mybid.messages != [] &&
-            <ListMessages bid={mybid} />
-          }
-        </div>
+        <Card.Group>
+          <Card style={{ width: "100vw", margin: '3%', padding: '3%' }}>
+            <div data-cy={`bid-${bid.listing.id}`}>
+              <img data-cy='listing-image' src={bid.listing.image} alt="parking" />
+              <h1 data-cy="listing-lead" >{bid.listing.lead}</h1>
+              <h1 data-cy="listing-scene" >{bid.listing.scene}</h1>
+              <h1 data-cy="listing-category" >{bid.listing.category}</h1>
+              <h1 data-cy="bid-status" >{bid.status}</h1>
+              <h1 data-cy="bid-offer" >{bid.bid}</h1>
+            </div>
+
+            <Card.Content extra >
+
+              <Header as="h3">Messages</Header>
+              {bid.messages != [] &&
+                <ListMessages bid={bid} />
+              }
+              <SendMessage
+                bid={bid}
+                userBids={true}
+                getBids={getBids}
+              />
+            </Card.Content>
+          </Card>
+        </Card.Group>
       </div>
+
     ))
   } else {
     bids = (
@@ -84,12 +97,15 @@ const MyAccount = () => {
   ));
 
   return (
-    <div>
-      <h1>Your current bids</h1>
-      <div>{bids}</div>
-      <h1>Your listings</h1>
-      <div>{content}</div>
-    </div>
+    <Container>
+      <ActionCableProvider
+        url={`ws://localhost:3000/cable?uid=${currentUser.id}`}>
+        <Header as="h1">Your current bids</Header>
+        {bids}
+        <Header as="h1">Your listings</Header>
+        {content}
+      </ActionCableProvider>
+    </Container>
   );
 };
 
